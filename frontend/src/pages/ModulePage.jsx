@@ -5,25 +5,25 @@ import Navbar from '../components/Navbar';
 import CodeEditor from '../components/CodeEditor';
 import styles from './ModulePage.module.css';
 
-function ModulePage() {
+function ModulePage({ user, onLogout }) {
   const { moduleId } = useParams();
 
   const module = modules.find((m) => m.id === moduleId);
   if (!module) {
     return (
       <div>
-        <Navbar />
+        <Navbar user={user} onLogout={onLogout} />
         <main style={{ padding: '2rem' }}>
           <h2>Modul Tidak Ditemukan</h2>
           <p>Modul yang Anda cari tidak ada.</p>
-          <Link to="/">Kembali ke Home</Link>
+          <Link to="/home">Kembali ke Home</Link>
         </main>
       </div>
     );
   }
   return (
     <div className={styles.pageContainer}>
-      <Navbar />
+      <Navbar user={user} onLogout={onLogout} />
       <div className={styles.moduleLayout}>
         <div className={styles.materiSide}>
           <h2>{module.title}</h2>
