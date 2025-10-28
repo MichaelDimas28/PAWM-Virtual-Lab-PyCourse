@@ -92,7 +92,7 @@
   font-weight: 700;
   font-size: 1rem;
   color: var(--white-primary);
-  background-color: var(--gray-dark);
+  background-color: #c9302c; /* A shade of red */
   border: none;
   border-radius: 8px;
   cursor: pointer;
@@ -100,5 +100,5 @@
 }
 
 .logoutButton:hover {
-  background-color: #a94442;
+  background-color: #a92723;
 }

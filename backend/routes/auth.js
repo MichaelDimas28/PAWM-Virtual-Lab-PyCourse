@@ -27,7 +27,10 @@ router.post('/register', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' },
       (err, token) => {
-        if (err) throw err;
+        if (err) {
+          console.error(err);
+          return res.status(500).send('Server error on token generation');
+        }
         res.json({ token });
       }
     );
@@ -57,7 +60,10 @@ router.post('/login', async (req, res) => {
       process.env.JWT_SECRET,
       { expiresIn: '1h' },
       (err, token) => {
-        if (err) throw err;
+        if (err) {
+          console.error(err);
+          return res.status(500).send('Server error on token generation');
+        }
         res.json({ token });
       }
     );

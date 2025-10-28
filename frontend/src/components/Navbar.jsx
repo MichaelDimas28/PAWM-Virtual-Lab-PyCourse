@@ -3,13 +3,10 @@ import styles from './Navbar.module.css';
 import { Link } from 'react-router-dom'; 
 import logoImage from '../assets/pycourse-logo.png';
 
-function Navbar() {
-
-  const user = null;
-
+function Navbar({ user, onLogout }) {
   return (
     <nav className={styles.navbar}>
-      <Link to="/" className={styles.logoLink}>
+      <Link to="/home" className={styles.logoLink}>
         <img 
           src={logoImage} 
           alt="PyCourse Logo" 
@@ -18,7 +15,15 @@ function Navbar() {
       </Link>
       
       <div className={styles.navLinks}>
-        <Link to="/profile" className={styles.navLink}>Profile</Link>
+        {user ? (
+          <>
+            <span className={styles.navText}>Hello, {user.name}</span>
+            <Link to="/profile" className={styles.navLink}>Profile</Link>
+            <button onClick={onLogout} className={styles.logoutButton}>Logout</button>
+          </>
+        ) : (
+          <Link to="/" className={styles.navLink}>Login</Link>
+        )}
       </div>
     </nav>
   );

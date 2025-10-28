@@ -41,3 +41,27 @@
   width: auto;   
   display: block; 
 }
+
+.navText {
+  color: var(--white-primary);
+  margin-right: 1.5rem;
+  align-self: center;
+}
+
+.logoutButton {
+  background-color: transparent;
+  color: var(--white-primary);
+  border: 1px solid var(--white-primary);
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-family: 'Lato', sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.logoutButton:hover {
+  background-color: var(--white-primary);
+  color: var(--navy-blue);
+}

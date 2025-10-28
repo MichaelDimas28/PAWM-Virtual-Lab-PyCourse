@@ -4,7 +4,14 @@ const mongoose = require('mongoose');
 const cors = require('cors');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+
+// It's important to use the port assigned by the environment in production
+const PORT = process.env.PORT;
+if (!PORT) {
+  console.error("Error: PORT environment variable is not set. Falling back to 5000, but this may not work in a production environment.");
+}
+const finalPort = PORT || 5000;
+
 
 // Middleware
 app.use(cors());
@@ -28,6 +35,6 @@ app.get('/', (req, res) => {
 });
 
 // Start the server
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+app.listen(finalPort, () => {
+  console.log(`Server running on port ${finalPort}`);
 });

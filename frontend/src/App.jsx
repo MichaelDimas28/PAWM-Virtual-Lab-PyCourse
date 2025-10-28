@@ -1,4 +1,3 @@
-// File: src/App.jsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import HomePage from './pages/HomePage';
@@ -6,47 +5,45 @@ import AuthPage from './pages/AuthPage';
 import ModulePage from './pages/ModulePage';
 import ProfilePage from './pages/ProfilePage';
 import ProtectedRoute from './components/ProtectedRoute';
+import api from './api';
 
 function App() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [token, setToken] = useState(localStorage.getItem('token'));
 
-  // ... (useEffect fetchUser Anda tetap sama) ...
   useEffect(() => {
     async function fetchUser() {
-      try {
-        const response = await fetch('/api/auth/me');
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.user);
-        } else {
+      if (token) {
+        try {
+          const response = await api.get('/api/auth/me');
+          if (response.ok) {
+            const data = await response.json();
+            setUser(data);
+          } else {
+            localStorage.removeItem('token');
+            setToken(null);
+            setUser(null);
+          }
+        } catch (error) {
           setUser(null);
         }
-      } catch (error) {
-        setUser(null);
       }
       setIsLoading(false);
     }
     fetchUser();
-  }, []);
+  }, [token]);
 
+  const handleLoginSuccess = (newToken) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
+  };
 
-  // --- TAMBAHKAN FUNGSI INI ---
-  const handleLogout = async () => {
-    try {
-      // 1. Panggil API backend untuk menghancurkan cookie
-      //    Kita gunakan method 'POST' untuk aksi yang mengubah state
-      await fetch('/api/auth/logout', { method: 'POST' });
-    } catch (error) {
-      console.error('Gagal menghubungi server logout:', error);
-    }
-    
-    // 2. Apapun yang terjadi di backend, paksa frontend untuk logout
-    //    dengan mengatur user ke null.
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    setToken(null);
     setUser(null);
   };
-  // ------------------------------
-
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -55,16 +52,11 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ... (Rute AuthPage Anda) ... */}
         <Route 
           path="/" 
-          element={!user ? <AuthPage /> : <Navigate to="/home" replace />} 
+          element={!user ? <AuthPage onLoginSuccess={handleLoginSuccess} /> : <Navigate to="/home" replace />} 
         />
         
-        {/* --- Rute Terlindungi --- */}
-        
-        {/* Anda juga harus meneruskan onLogout ke HomePage/ModulePage
-            untuk Navbar Anda nanti */}
         <Route 
           path="/home" 
           element={
@@ -81,18 +73,14 @@ function App() {
             </ProtectedRoute>
           } 
         />
-        
-        {/* --- UBAH RUTE INI --- */}
         <Route 
           path="/profile" 
           element={
             <ProtectedRoute user={user}>
-              {/* 1. Teruskan fungsi onLogout sebagai prop */}
               <ProfilePage user={user} onLogout={handleLogout} />
             </ProtectedRoute>
           } 
         />
-        {/* --------------------- */}
 
         <Route path="*" element={<Navigate to={user ? "/home" : "/"} replace />} />
       </Routes>
