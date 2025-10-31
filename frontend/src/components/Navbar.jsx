@@ -1,12 +1,19 @@
 import React from 'react';
 import styles from './Navbar.module.css';
-import { Link } from 'react-router-dom'; 
+import { Link, useNavigate } from 'react-router-dom'; 
 import logoImage from '../assets/pycourse-logo.png';
 
-function Navbar({ user, onLogout }) {
+function Navbar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    navigate('/auth');
+  };
+
   return (
     <nav className={styles.navbar}>
-      <Link to="/home" className={styles.logoLink}>
+      <Link to="/" className={styles.logoLink}>
         <img 
           src={logoImage} 
           alt="PyCourse Logo" 
@@ -15,15 +22,8 @@ function Navbar({ user, onLogout }) {
       </Link>
       
       <div className={styles.navLinks}>
-        {user ? (
-          <>
-            <span className={styles.navText}>Hello, {user.name}</span>
-            <Link to="/profile" className={styles.navLink}>Profile</Link>
-            <button onClick={onLogout} className={styles.logoutButton}>Logout</button>
-          </>
-        ) : (
-          <Link to="/" className={styles.navLink}>Login</Link>
-        )}
+        <Link to="/profile" className={styles.navLink}>Profile</Link>
+        <button onClick={handleLogout} className={styles.navLink}>Logout</button>
       </div>
     </nav>
   );

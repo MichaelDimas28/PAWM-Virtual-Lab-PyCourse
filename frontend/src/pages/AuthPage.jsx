@@ -1,47 +1,92 @@
 import React, { useState } from 'react';
-import styles from './AuthPage.module.css';
 import { useNavigate } from 'react-router-dom';
-import api from '../api';
+import styles from './AuthPage.module.css';
+import API_BASE_URL from '../apiConfig';
 
-function AuthPage({ onLoginSuccess }) {
+function AuthPage() {
+  const [isLogin, setIsLogin] = useState(true);
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
+    const path = isLogin ? '/api/auth/login' : '/api/auth/register';
+    const url = `${API_BASE_URL}${path}`;
+    const body = isLogin ? { email, password } : { username, email, password };
 
     try {
-      const response = await api.post('/api/auth/login', { email, password });
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
 
       if (response.ok) {
         const data = await response.json();
-        onLoginSuccess(data.token);
-        navigate('/home');
+        if (isLogin) {
+          localStorage.setItem('token', data.token);
+          navigate('/');
+        } else {
+          setIsLogin(true);
+          setSuccess('Registration successful! Please log in.');
+          setUsername('');
+          setEmail('');
+          setPassword('');
+        }
       } else {
-        const data = await response.json();
-        setError(data.msg || 'Login failed. Please check your email and password.');
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.indexOf('application/json') !== -1) {
+          const errorData = await response.json();
+          setError(errorData.msg || 'An error occurred. Please try again.');
+        } else {
+          const errorText = await response.text();
+          setError(errorText || 'An error occurred. Please try again.');
+        }
       }
-    } catch (err) {
-      setError('Failed to connect to the server. Please try again later.');
+    } catch (error) {
+      setError('Failed to connect to the server. Please check your connection.');
+      console.error('Error during authentication:', error);
     }
+  };
+
+  const switchMode = () => {
+    setIsLogin(!isLogin);
+    setError('');
+    setSuccess('');
+    setUsername('');
+    setEmail('');
+    setPassword('');
   };
 
   return (
     <div className={styles.authPage}>
       <div className={styles.authContainer}>
-        <h1>Selamat Datang!</h1>
-        <p>Login untuk memulai perjalanan Python Anda di PyCourse.</p>
-        
-        <form onSubmit={handleSubmit} className={styles.loginForm}>
+        <h1>{isLogin ? 'Login' : 'Register'}</h1>
+        {error && <p className={styles.errorMessage}>{error}</p>}
+        {success && <p className={styles.successMessage}>{success}</p>}
+        <form onSubmit={handleSubmit}>
+          {!isLogin && (
+            <input
+              type="text"
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+          )}
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
-            className={styles.inputField}
             required
           />
           <input
@@ -49,14 +94,16 @@ function AuthPage({ onLoginSuccess }) {
             placeholder="Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className={styles.inputField}
             required
           />
-          {error && <p className={styles.errorMessage}>{error}</p>}
-          <button type="submit" className={styles.loginButton}>
-            Login
-          </button>
+          <button type="submit">{isLogin ? 'Login' : 'Register'}</button>
         </form>
+        <p>
+          {isLogin ? "Don't have an account?" : 'Already have an account?'}
+          <button onClick={switchMode}>
+            {isLogin ? 'Register' : 'Login'}
+          </button>
+        </p>
       </div>
     </div>
   );
