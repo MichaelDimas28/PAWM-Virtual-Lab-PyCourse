@@ -4,6 +4,9 @@
   padding: 1rem;
   margin: 1rem;
   background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .moduleCard:hover {
@@ -36,39 +39,12 @@
 }
 
 .moduleCard.completed {
-  background-color: #d4edda;
-  border-color: #c3e6cb;
+  border-color: #28a745;
+  background-color: #f0fff0;
 }
 
-.moduleCard.completed:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 2px 12px rgba(21, 87, 36, 0.2);
-}
-
-.moduleCard.completed h4 {
-  color: #155724;
-}
-
-.completedText {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background-color: #155724;
-  color: white;
-  padding: 3px 8px;
-  border-radius: 12px;
-  font-size: 0.8rem;
-  font-weight: 700;
-}
-
-.moduleList {
-  display: flex;
-  flex-wrap: wrap;
-}
-
-.moduleCard {
-  position: relative;
-  flex: 1 1 300px; /* Flex properties for wrapping */
-  max-width: 350px;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+.checkmark {
+  color: #28a745;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
